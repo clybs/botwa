@@ -10,6 +10,7 @@ import (
 	"net/http"
 )
 
+// createArticle will create an article
 func createArticle(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	// Get request data
 	decoder := json.NewDecoder(req.Body)
@@ -27,8 +28,9 @@ func createArticle(w http.ResponseWriter, req *http.Request, _ httprouter.Params
 			Message: http.StatusText(406),
 			Data:    "",
 		}
-		fmt.Fprintf(w, displayError(errData, w))
-		fmt.Fprintf(w, "\n")
+
+		// Output data
+		displayOutput(w, getErrorString(errData))
 		return
 	}
 
@@ -37,12 +39,18 @@ func createArticle(w http.ResponseWriter, req *http.Request, _ httprouter.Params
 		log.Fatalln(err)
 	}
 
-	// Output results
-	fmt.Fprintf(w, string(data))
+	// Output data
+	displayOutput(w, string(data))
+}
+
+// displayOutput will display the output
+func displayOutput(w http.ResponseWriter, data string) {
+	fmt.Fprintf(w, data)
 	fmt.Fprintf(w, "\n")
 }
 
-func displayError(articleError ArticleError, w http.ResponseWriter) string {
+// getErrorString will get the error string from an articleError
+func getErrorString(articleError ArticleError) string {
 	data, err := json.Marshal(articleError)
 	if err != nil {
 		log.Fatalln(err)
@@ -51,6 +59,7 @@ func displayError(articleError ArticleError, w http.ResponseWriter) string {
 	return string(data)
 }
 
+// listArticles will list the articles
 func listArticles(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 	articles, err := ArticlesList()
 	if err != nil {
@@ -59,8 +68,9 @@ func listArticles(w http.ResponseWriter, req *http.Request, _ httprouter.Params)
 			Message: http.StatusText(500),
 			Data:    "",
 		}
-		fmt.Fprintf(w, displayError(errData, w))
-		fmt.Fprintf(w, "\n")
+
+		// Output data
+		displayOutput(w, getErrorString(errData))
 		return
 	}
 	data, err := json.Marshal(articles)
@@ -68,10 +78,11 @@ func listArticles(w http.ResponseWriter, req *http.Request, _ httprouter.Params)
 		log.Fatalln(err)
 	}
 
-	fmt.Fprintf(w, string(data))
-	fmt.Fprintf(w, "\n")
+	// Output data
+	displayOutput(w, string(data))
 }
 
+// readArticle will read an article based in the id given
 func readArticle(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 	// Get article id to read
 	article, err := ArticlesRead(ps.ByName("article_id"))
@@ -82,8 +93,9 @@ func readArticle(w http.ResponseWriter, req *http.Request, ps httprouter.Params)
 			Message: err.Error(),
 			Data:    "",
 		}
-		fmt.Fprintf(w, displayError(errData, w))
-		fmt.Fprintf(w, "\n")
+
+		// Output data
+		displayOutput(w, getErrorString(errData))
 		return
 	case err != nil:
 		errData := ArticleError{
@@ -91,8 +103,9 @@ func readArticle(w http.ResponseWriter, req *http.Request, ps httprouter.Params)
 			Message: http.StatusText(500),
 			Data:    "",
 		}
-		fmt.Fprintf(w, displayError(errData, w))
-		fmt.Fprintf(w, "\n")
+
+		// Output data
+		displayOutput(w, getErrorString(errData))
 		return
 	}
 
@@ -102,10 +115,10 @@ func readArticle(w http.ResponseWriter, req *http.Request, ps httprouter.Params)
 	}
 
 	// Output data
-	fmt.Fprintf(w, string(data))
-	fmt.Fprintf(w, "\n")
+	displayOutput(w, string(data))
 }
 
+// main is the entry point of the program
 func main() {
 	mux := httprouter.New()
 

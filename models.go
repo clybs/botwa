@@ -10,6 +10,7 @@ import (
 
 var db *sql.DB
 
+// init will prepare db connection
 func init() {
 	var err error
 
@@ -63,6 +64,7 @@ type ListArticlesResponse struct {
 	Data    []ArticleData `json:"data"`
 }
 
+// ArticlesCreate will insert an article in db
 func ArticlesCreate(car CreateArticleRequest) (CreateArticleResponse, error) {
 	var data CreateArticleResponse
 
@@ -77,7 +79,7 @@ func ArticlesCreate(car CreateArticleRequest) (CreateArticleResponse, error) {
 	// Check if any are blank
 	if article.Title == "" || article.Content == "" || article.Author == "" {
 		// Not acceptable
-		return data, errors.New("400. Bad request. All fields must be complete.")
+		return data, errors.New("Bad request. All fields must be complete.")
 	}
 
 	// Prepare query
@@ -105,6 +107,7 @@ func ArticlesCreate(car CreateArticleRequest) (CreateArticleResponse, error) {
 	return data, nil
 }
 
+// ArticlesList will fetch a list of articles in db
 func ArticlesList() (ListArticlesResponse, error) {
 	var data ListArticlesResponse
 
@@ -138,13 +141,14 @@ func ArticlesList() (ListArticlesResponse, error) {
 	return data, nil
 }
 
+// ArticlesRead will fetch an article from db
 func ArticlesRead(id string) (ReadArticleResponse, error) {
 	var data ReadArticleResponse
 	articleData := ArticleData{}
 
 	// Make sure there is data
 	if id == "" {
-		return data, errors.New("400. Bad Request.")
+		return data, errors.New("Bad Request.")
 	}
 
 	// Execute query
