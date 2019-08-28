@@ -82,7 +82,8 @@ func readArticle(w http.ResponseWriter, req *http.Request, ps httprouter.Params)
 			Message: err.Error(),
 			Data:    "",
 		}
-		displayError(errData, w)
+		fmt.Fprintf(w, displayError(errData, w))
+		fmt.Fprintf(w, "\n")
 		return
 	case err != nil:
 		errData := ArticleError{
